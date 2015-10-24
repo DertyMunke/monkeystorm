@@ -22,7 +22,7 @@ public class UIEvents : MonoBehaviour {
 
     public void OnPlayClick()
     {
-        //Application.LoadLevel("name");
+        Application.LoadLevel("Level1");
     }
 
     public void OnSettingClick()
