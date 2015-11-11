@@ -25,9 +25,9 @@ public class Monkey : MonoBehaviour {
     Collider2D coll;
     private bool pass;
     //for dragging
-    private Vector2 lastPosition;
     private Vector2 curPosition;
-    public Vector2 dragVector;
+    private float minX;
+    private float maxX;
     public int dragSwipe = 20;
     private bool drag;
 
@@ -46,8 +46,10 @@ public class Monkey : MonoBehaviour {
         whatIsBranch = LayerMask.GetMask("Branch");
         coll = GetComponent<Collider2D>();
         pass = true;
-        lastPosition = Vector2.zero;
+        curPosition = Vector2.zero;
         drag = false;
+        minX = 100000;
+        maxX = -100000;
     }
 
     //check per sec; use this for physics
@@ -97,15 +99,12 @@ public class Monkey : MonoBehaviour {
         {
             oldMousePosition = Input.mousePosition;
             drag = true;
-            //get mouse position
-            GettingMousePositions();
         }
         //when mouse up, save the position
         if (Input.GetMouseButtonUp(leftClick))
         {
             //drag set
             drag = false;
-            lastPosition = curPosition;
             newMousePosition = Input.mousePosition;
             //get delta
             return (Vector2.Distance(oldMousePosition,newMousePosition));
@@ -124,14 +123,12 @@ public class Monkey : MonoBehaviour {
     {
         if (Input.GetMouseButton(leftClick))
         {
-            if (lastPosition == Vector2.zero)
-                lastPosition = Input.mousePosition;
-            else
-            {
                 curPosition = Input.mousePosition;
-                dragVector = curPosition - lastPosition;
-                
-            }
+            //get minX and maxX
+            if (minX > curPosition.x)
+                minX = curPosition.x;
+            if (maxX < curPosition.x)
+                maxX = curPosition.x;
         }
     }
 
@@ -140,11 +137,16 @@ public class Monkey : MonoBehaviour {
     {
         if ((oldMousePosition.magnitude + newMousePosition.magnitude) > 0)
         {
-            oldMousePosition = Vector2.zero;
             newMousePosition = Vector2.zero;
+            oldMousePosition = Vector2.zero;
         }
-        if (dragVector.magnitude > 0)
-            dragVector = Vector2.zero;
+
+        if (!drag)
+        {
+            curPosition = Vector2.zero;
+            minX = 100000;
+            maxX = -100000;
+        }
     }
 
     //move the monkey by delta vector
@@ -177,20 +179,25 @@ public class Monkey : MonoBehaviour {
     }
 
     //check back drag
-    private bool CheckBackDrag(int r, int l, int s, int cv)
+    private bool CheckBackDrag(int r, int l, int s, int XD)
     {
-        if (dragVector.magnitude < dragSwipe)
+        if (XD == s)
             return false;
 
-        if (cv == s)
-            return false;
-
-        int dragD = GetXD(r, l, s, dragVector);
-        if (dragD == s)
-            return false;
-
-        if(cv != dragD)
-        return true;
+        else if(XD == r)
+        {
+            if (minX < oldMousePosition.x)
+                return true;
+            else
+                return false;
+        }
+        else if(XD == l)
+        {
+            if (maxX > oldMousePosition.x)
+                return true;
+            else
+                return false;
+        }
 
         return false;
     }
@@ -239,7 +246,7 @@ public class Monkey : MonoBehaviour {
         //jump if chacco is on branches
 
         //check if it is swing
-        bool swing = CheckBackDrag(r, l, s, xD);
+        bool swing = CheckBackDrag(r,l,s,xD);
 
         //up directions
         if (yD == u && grounded)
