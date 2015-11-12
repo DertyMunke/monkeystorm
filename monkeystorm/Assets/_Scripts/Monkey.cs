@@ -89,8 +89,13 @@ public class Monkey : MonoBehaviour {
     //shaking
     private void ShakingMove()
     {
-        if(grounded)
-        GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, 3f);
+        if (grounded)
+            GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, 3f);
+        else
+        {
+            GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, -jumpHeight);
+            coll.isTrigger = false;
+        }
     }
 
     //get delta vector to check it is valid swipe or not
