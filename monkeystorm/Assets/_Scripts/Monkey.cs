@@ -30,16 +30,17 @@ public class Monkey : MonoBehaviour {
     private float maxX;
     public int dragSwipe = 20;
     private bool drag;
+    private float sjump;
 
     // Use this for initialization
     void Start()
     {
         oldMousePosition = Vector2.zero;
         newMousePosition = Vector2.zero;
-        moveSpeed = 10;
-        jumpHeight = 15;
+        moveSpeed = 11;
+        jumpHeight = 16;
         jumpS = 1.5f;
-        moveS = 0.8f;
+        moveS = 0.7f;
         limitAngle = 70;
         branchCheck = GameObject.Find("Branch Check").transform;
         branchCheckRadius = 0.1f;
@@ -50,6 +51,7 @@ public class Monkey : MonoBehaviour {
         drag = false;
         minX = 100000;
         maxX = -100000;
+        sjump = 1.3f;
     }
 
     //check per sec; use this for physics
@@ -257,9 +259,9 @@ public class Monkey : MonoBehaviour {
                 //if it is swing then swing jump
                 if(swing)
                 {
-                    coll.isTrigger = true;
-                    pass = false;
-                    GetComponent<Rigidbody2D>().velocity = new Vector2(moveSpeed * jumpS, jumpHeight * jumpS);
+                    //coll.isTrigger = true;
+                    //pass = false;
+                    GetComponent<Rigidbody2D>().velocity = new Vector2(moveSpeed * sjump, jumpHeight * sjump);
                 }
                 else
                     GetComponent<Rigidbody2D>().velocity = new Vector2(moveSpeed, jumpHeight);
@@ -273,16 +275,16 @@ public class Monkey : MonoBehaviour {
                 //if swing then swing jump
                 if (swing)
                 {
-                    coll.isTrigger = true;
-                    pass = false;
-                    GetComponent<Rigidbody2D>().velocity = new Vector2(-moveSpeed * jumpS, jumpHeight * jumpS);
+                    //coll.isTrigger = true;
+                    //pass = false;
+                    GetComponent<Rigidbody2D>().velocity = new Vector2(-moveSpeed * sjump, jumpHeight * sjump);
                 }
                 else
                     GetComponent<Rigidbody2D>().velocity = new Vector2(-moveSpeed, jumpHeight);
             }
         }
         //down directions
-        else
+        else if(yD == d && grounded)
         {
             //if xD is right and if yD is down, right little move
             if (xD == r)
@@ -291,8 +293,13 @@ public class Monkey : MonoBehaviour {
             else if (xD == s)
                 Drop();
             //if xD is left and if yD is down, left little move
-            else
+            else if(xD == l)
                 GetComponent<Rigidbody2D>().velocity = new Vector2(-moveSpeed * moveS, GetComponent<Rigidbody2D>().velocity.y);
+        }
+        if(!grounded)
+        {
+            GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, -1);
+            coll.isTrigger = false;
         }
     }
 
@@ -300,9 +307,9 @@ public class Monkey : MonoBehaviour {
     private bool Drop()
     {
         //if it attached to branches, make monkey isTrigger
-        if(grounded)
+        if (grounded)
             coll.isTrigger = true;
-
+      
         //return true, if it is trigger; otherwise false
         return coll.isTrigger;
     }
