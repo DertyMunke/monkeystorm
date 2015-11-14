@@ -45,7 +45,7 @@ public class Monkey : MonoBehaviour {
         branchCheck = GameObject.Find("Branch Check").transform;
         branchCheckRadius = 0.1f;
         whatIsBranch = LayerMask.GetMask("Branch");
-        coll = GetComponent<Collider2D>();
+        coll = branchCheck.GetComponent<Collider2D>();
         pass = true;
         curPosition = Vector2.zero;
         drag = false;
@@ -59,6 +59,17 @@ public class Monkey : MonoBehaviour {
     {
         //set grounded if it is attached to branches
         grounded = Physics2D.OverlapCircle(branchCheck.position, branchCheckRadius, whatIsBranch);
+
+        // When the monkey is moving upwards disable the collider
+        if (GetComponent<Rigidbody2D>().velocity.y > 0)
+        {
+            branchCheck.GetComponent<Collider2D>().enabled = false;
+        }
+        else if (GetComponent<Rigidbody2D>().velocity.y < 0)
+        {
+            branchCheck.GetComponent<Collider2D>().enabled = true;
+        }
+
     }
 
     // Update is called once per frame
@@ -322,8 +333,8 @@ public class Monkey : MonoBehaviour {
     //straight jump, if jump it will pass one branch and hold back the grap
     private void StraightJump()
     {
-        coll.isTrigger = true;
-        pass = false;
+        //coll.isTrigger = true;
+        //pass = false;
         GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, jumpHeight * jumpS);
     }
 
