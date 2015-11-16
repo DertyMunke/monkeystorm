@@ -23,7 +23,7 @@ public class Monkey : MonoBehaviour {
     private bool grounded;
     //give up grap and hold back grap
     Collider2D coll;
-    private bool pass;
+    //private bool pass;
     //for dragging
     private Vector2 curPosition;
     private float minX;
@@ -32,9 +32,22 @@ public class Monkey : MonoBehaviour {
     private bool drag;
     private float sjump;
 
+    public static Monkey monkeyScript;
+
+    private GameObject currentBranch;
+    private bool carryBranch = false;
+    private int numBananas = 0;
+
+    public bool CarryBranch { set { carryBranch = value; } }
+
+    private void Awake()
+    {
+        monkeyScript = this;
+    }
+
     // Use this for initialization
     void Start()
-    {
+    {   
         oldMousePosition = Vector2.zero;
         newMousePosition = Vector2.zero;
         moveSpeed = 11;
@@ -46,7 +59,7 @@ public class Monkey : MonoBehaviour {
         branchCheckRadius = 0.1f;
         whatIsBranch = LayerMask.GetMask("Branch");
         coll = branchCheck.GetComponent<Collider2D>();
-        pass = true;
+        //pass = true;
         curPosition = Vector2.zero;
         drag = false;
         minX = 100000;
@@ -90,7 +103,8 @@ public class Monkey : MonoBehaviour {
         else if(deltaM >= 0 && deltaM < swipeLengh)
         {
             //shaking
-            ShakingMove();
+            if(!carryBranch)
+                ShakingMove();
 
             //reset the delta after move
             ResetMousePosition();
@@ -101,7 +115,11 @@ public class Monkey : MonoBehaviour {
     private void ShakingMove()
     {
         if (grounded)
+        {
             GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, 3f);
+            currentBranch = BranchCheck.branchCheckScript.CurrentBranch;
+            currentBranch.GetComponent<Branch>().BranckStrength = .1f;
+        }
         else
         {
             GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, -jumpHeight);
@@ -338,16 +356,25 @@ public class Monkey : MonoBehaviour {
         GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, jumpHeight * jumpS);
     }
 
-    //whenever monkey enter the colliders, it means it will pass them
+    // Looking for world collisions
     void OnTriggerEnter2D(Collider2D other)
     {
-        pass = true;
+        if (other.tag == "Consumable")
+        {
+            if (other.name == "Banana_x1(Clone)")
+            {
+                numBananas += 1;
+                Bananas.bananaScript.ConsumeBanana();
+            }
+            else if (other.name == "Banana_x3(Clone)")
+            {
+                numBananas += 3;
+                Bananas.bananaScript.ConsumeBanana();
+            }
+
+            Destroy(other.gameObject);
+        }
     }
-    
-    //whenever monkey pass the collider, trigger set to false
-    void OnTriggerExit2D(Collider2D other)
-    {
-        if(pass)
-        coll.isTrigger = false;
-    }
+
+    // I moved OnTriggerExit2D to a script on the BranchCheck object called BranchCheck.cs
 }
