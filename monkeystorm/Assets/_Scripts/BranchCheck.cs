@@ -32,5 +32,7 @@ public class BranchCheck : MonoBehaviour {
     {
         if (other.gameObject.tag == "Branch")
             currentBranch = other.gameObject;
+        else
+            currentBranch = null;
     }
 }

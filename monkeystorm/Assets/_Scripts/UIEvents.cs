@@ -13,16 +13,33 @@ public class UIEvents : MonoBehaviour
     public UITexture BG;
     //Game menu
     public GameObject gameMenu;
+   
     public UILabel timerLabel;
     public UILabel scoreLabel;
+    public UILabel levelLabel;
 
+    public static UIEvents uiEventsScript;
     public UITexture[] hearts;
-    // Use this for initialization
-    void Start()
-    {
+    public UILabel gameOva;
+    public UILabel playBtnLbl;
 
+    private bool restartLvl = false;
+    private int heartIndex;
+
+    public string Score { get { return scoreLabel.text; } }
+
+    private void Awake()
+    {
+        uiEventsScript = this;
+        heartIndex = hearts.Length - 1;
     }
 
+    private void Start()
+    {
+        scoreLabel.text = GameManager.gameManagerScript.Score.ToString();
+        levelLabel.text = GameManager.gameManagerScript.Level.ToString();
+    }
+    
     // Update is called once per frame
     void Update()
     {
@@ -33,14 +50,14 @@ public class UIEvents : MonoBehaviour
 
             scoreLabel.text = GameInstance.currentScore.ToString();
 
-            for (int i = 0; i < hearts.Length; i++)
-            {
-                hearts[i].gameObject.SetActive(false);
-            }
-            for (int i = 0; i < GameInstance.currentHP; i++)
-            {
-                hearts[i].gameObject.SetActive(true);
-            }
+            //for (int i = 0; i < hearts.Length; i++)
+            //{
+            //    hearts[i].gameObject.SetActive(false);
+            //}
+            //for (int i = 0; i < GameInstance.currentHP; i++)
+            //{
+            //    hearts[i].gameObject.SetActive(true);
+            //}
         }
     }
 
@@ -139,7 +156,10 @@ public class UIEvents : MonoBehaviour
     public void OnGameMenuPlayClick()
     {
         Time.timeScale = 1; //resume
-        gameMenu.SetActive(false);
+        if (restartLvl)
+            Application.LoadLevel(Application.loadedLevelName);
+        else
+            gameMenu.SetActive(false);
     }
 
     public void OnSaveClick()
@@ -154,6 +174,22 @@ public class UIEvents : MonoBehaviour
     {
         Time.timeScale = 1;
         Application.LoadLevel("Main Menu");
+    }
+
+    public bool  RemoveHeart()
+    {
+        hearts[heartIndex].enabled = false;
+        heartIndex--;
+        if(heartIndex < 0)
+        {
+            gameOva.enabled = true;
+            playBtnLbl.text = "Restart Level";
+            restartLvl = true;
+            OnPauseClick();
+            return false;
+        }
+
+        return true;
     }
     #endregion
 }

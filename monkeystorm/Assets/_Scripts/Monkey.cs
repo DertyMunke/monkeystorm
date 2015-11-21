@@ -103,7 +103,7 @@ public class Monkey : MonoBehaviour {
         else if(deltaM >= 0 && deltaM < swipeLengh)
         {
             //shaking
-            if(!carryBranch)
+            if(!carryBranch && Time.timeScale != 0)
                 ShakingMove();
 
             //reset the delta after move
@@ -118,7 +118,8 @@ public class Monkey : MonoBehaviour {
         {
             GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, 3f);
             currentBranch = BranchCheck.branchCheckScript.CurrentBranch;
-            currentBranch.GetComponent<Branch>().BranckStrength = .1f;
+            if(currentBranch && currentBranch.name != "Unbreakable")
+                currentBranch.GetComponent<Branch>().BranckStrength = .1f;
         }
         else
         {

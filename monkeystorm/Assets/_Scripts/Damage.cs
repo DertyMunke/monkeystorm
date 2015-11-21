@@ -10,7 +10,8 @@ public class Damage : MonoBehaviour {
     {
         if (transform.position.y < groundHeight)
         {
-            HitTheGround();
+            if(UIEvents.uiEventsScript.RemoveHeart())
+                HitTheGround();
         }
     }
 

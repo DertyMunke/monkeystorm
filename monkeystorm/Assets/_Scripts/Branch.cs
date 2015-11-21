@@ -9,14 +9,15 @@ public class Branch : MonoBehaviour {
     #endregion
 
     #region Private Variables
+    private bool colorChanging = false;
     private float colorToRed = 0;
     private float branchStrength = 0;
     #endregion
 
     #region Public Variables
     private Transform monkey;
-    public bool wallBranch = false;
-    public bool roofBranch = false;
+    public bool housePart = false;
+    public bool rightWall = false;
     #endregion
 
     #region Properites
@@ -26,17 +27,20 @@ public class Branch : MonoBehaviour {
     #region Unity Methods
     private void Start()
     {
-        branchStrength = 1;// Random.Range(MIN_BRANCH_STRENGTH, MAX_BRANCH_STRENGTH);
+        branchStrength = Random.Range(MIN_BRANCH_STRENGTH, MAX_BRANCH_STRENGTH);
+        if(rightWall)
+            StartCoroutine(ColorChange(Color.blue));
+        if (housePart)
+            branchStrength = 1;
     }
 
     private void FixedUpdate()
     {
-        if (wallBranch || roofBranch)
+        if (housePart)
         {
-            ColorChange(Color.blue);
             if (branchStrength < 0)
             {
-                GetComponent<Collider2D>().enabled = false;
+                GetComponent<Collider2D>().isTrigger = true;
                 monkey = Monkey.monkeyScript.gameObject.transform;
                 transform.position = new Vector2(monkey.position.x, monkey.position.y - 1);
                 Monkey.monkeyScript.CarryBranch = true;
@@ -44,7 +48,9 @@ public class Branch : MonoBehaviour {
         }
         else if(branchStrength < 1)
         {
-            ColorChange(Color.red);
+            if(!colorChanging)
+                StartCoroutine(ColorChange(Color.red));
+
             if(branchStrength < 0)
             {
                 GetComponent<Collider2D>().enabled = false;
@@ -54,22 +60,35 @@ public class Branch : MonoBehaviour {
     }
 
     #endregion
+    #region Public Methods
+
+    public void StartColorChange(Color c)
+    {
+        StartCoroutine(ColorChange(c));
+    }
+
+    #endregion
     #region Private Methods
     /// <summary>
     /// Makes a branch blink with a red color.
     /// </summary>
-    private void ColorChange(Color c)
+    private IEnumerator ColorChange(Color c)
     {
-        if ((int)(colorToRed % 2) == 0)
+        colorChanging = true;
+        while(colorChanging)
         {
-            GetComponent<SpriteRenderer>().color = Color.Lerp(GetComponent<SpriteRenderer>().color, c, COLOR_LERP);
+            if ((int)(colorToRed % 2) == 0)
+            {
+                GetComponent<SpriteRenderer>().color = Color.Lerp(GetComponent<SpriteRenderer>().color, c, COLOR_LERP);
+            }
+            else
+            {
+                GetComponent<SpriteRenderer>().color = Color.Lerp(GetComponent<SpriteRenderer>().color, Color.white, COLOR_LERP);
+            }
+            colorToRed += COLOR_LERP;
+            yield return null;
         }
-        else
-        {
-            GetComponent<SpriteRenderer>().color = Color.Lerp(GetComponent<SpriteRenderer>().color, Color.white, COLOR_LERP);
-        }
-        colorToRed += COLOR_LERP;
     }
 
-    #endregion
+    #endregion   
 }
