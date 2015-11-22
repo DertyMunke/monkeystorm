@@ -24,7 +24,7 @@ public class TootLvl_1 : MonoBehaviour {
 
     private void Update()
     {
-        if (Input.GetMouseButtonDown(0))
+        if (tootStep < 6 && Input.GetMouseButtonDown(0))
         {
             TootStep();
         }

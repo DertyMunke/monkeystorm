@@ -32,11 +32,13 @@ public class Monkey : MonoBehaviour {
     private bool drag;
     private float sjump;
 
-    public static Monkey monkeyScript;
-
     private GameObject currentBranch;
+    private Vector3 throwDirection;
     private bool carryBranch = false;
+    private bool throwBanana = false;
     private int numBananas = 0;
+
+    public static Monkey monkeyScript;
 
     public bool CarryBranch { set { carryBranch = value; } }
 
@@ -88,27 +90,58 @@ public class Monkey : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        //get delta mouse
-        float deltaM = GetDeltaMouse();
-        //swipe move
-        if (deltaM >= swipeLengh)
+        if (!throwBanana)
         {
-            //move
-            MonkeyMove();
-           
-            //reset the delta after move
-            ResetMousePosition();
-        }
-        //tap move
-        else if(deltaM >= 0 && deltaM < swipeLengh)
-        {
-            //shaking
-            if(!carryBranch && Time.timeScale != 0)
-                ShakingMove();
+            //get delta mouse
+            float deltaM = GetDeltaMouse();
+            //swipe move
+            if (deltaM >= swipeLengh)
+            {
+                //move
+                MonkeyMove();
 
-            //reset the delta after move
-            ResetMousePosition();
+                //reset the delta after move
+                ResetMousePosition();
+            }
+            //tap move
+            else if (deltaM >= 0 && deltaM < swipeLengh)
+            {
+                //shaking
+                if (!carryBranch && Time.timeScale != 0)
+                    ShakingMove();
+
+                //reset the delta after move
+                ResetMousePosition();
+            }
         }
+    }
+
+    // If you touch the monkey he will not move, just throw a banana
+    private void OnMouseDown()
+    {
+        if (Application.loadedLevelName == "Level2")
+        {
+            throwBanana = true;
+            throwDirection = Input.mousePosition;
+        }
+    }
+
+    // Allows the monkey to move again, but needs to wait to prevent movement
+    private void OnMouseUp()
+    {
+        if(numBananas > 0)
+        {
+            numBananas--;
+            throwDirection = Input.mousePosition - throwDirection;
+            Bananas.bananaScript.ThrowBanana(new Vector2(throwDirection.x, throwDirection.y), transform.position, numBananas);
+        }
+        Invoke("NoMoThrow", .1f);
+    }
+
+    // Allows the monkey to move again
+    private void NoMoThrow()
+    {
+        throwBanana = false;
     }
 
     //shaking
@@ -365,12 +398,12 @@ public class Monkey : MonoBehaviour {
             if (other.name == "Banana_x1(Clone)")
             {
                 numBananas += 1;
-                Bananas.bananaScript.ConsumeBanana();
+                Bananas.bananaScript.ConsumeBanana(numBananas);
             }
             else if (other.name == "Banana_x3(Clone)")
             {
                 numBananas += 3;
-                Bananas.bananaScript.ConsumeBanana();
+                Bananas.bananaScript.ConsumeBanana(numBananas);
             }
 
             Destroy(other.gameObject);

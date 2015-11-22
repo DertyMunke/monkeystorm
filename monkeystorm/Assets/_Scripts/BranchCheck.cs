@@ -17,7 +17,6 @@ public class BranchCheck : MonoBehaviour {
     /// <summary>
     /// When the monkey passes through a branch, activate the collider
     /// </summary>
-    /// <param name="other"></param>
     private void OnTriggerExit2D(Collider2D other)
     {
         if (other.tag == "Branch")
@@ -27,7 +26,6 @@ public class BranchCheck : MonoBehaviour {
     /// <summary>
     /// Keep track of the current branch that the monkey is holding on to
     /// </summary>
-    /// <param name="other"></param>
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.tag == "Branch")

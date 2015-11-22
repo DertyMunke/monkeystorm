@@ -36,6 +36,7 @@ public class UIEvents : MonoBehaviour
 
     private void Start()
     {
+        GameInstance.timer = 0;
         scoreLabel.text = GameManager.gameManagerScript.Score.ToString();
         levelLabel.text = GameManager.gameManagerScript.Level.ToString();
     }
@@ -176,6 +177,9 @@ public class UIEvents : MonoBehaviour
         Application.LoadLevel("Main Menu");
     }
 
+    /// <summary>
+    /// Removes a heart from the UI when damage received
+    /// </summary>
     public bool  RemoveHeart()
     {
         hearts[heartIndex].enabled = false;

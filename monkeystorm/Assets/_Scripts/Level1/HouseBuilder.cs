@@ -37,7 +37,7 @@ public class HouseBuilder : MonoBehaviour {
                 GameManager.gameManagerScript.Level = 2;
                 int score = 0;
                 int.TryParse(UIEvents.uiEventsScript.Score, out score);
-                GameManager.gameManagerScript.Score = score;
+                GameManager.gameManagerScript.Score += score;
                 Time.timeScale = 0;
             }
             else if(rightWall.activeInHierarchy)

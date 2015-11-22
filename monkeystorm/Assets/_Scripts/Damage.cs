@@ -35,4 +35,15 @@ public class Damage : MonoBehaviour {
 
         GetComponent<Rigidbody2D>().velocity = -(vel * 1.2f);
     }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.tag == "Enemy")
+        {
+            GetComponent<Rigidbody2D>().velocity = other.gameObject.GetComponent<Rigidbody2D>().velocity * 1.5f;
+            other.gameObject.GetComponent<Rigidbody2D>().velocity =
+                -other.gameObject.GetComponent<Rigidbody2D>().velocity * 1.5f;
+            UIEvents.uiEventsScript.RemoveHeart();
+        }
+    }
 }

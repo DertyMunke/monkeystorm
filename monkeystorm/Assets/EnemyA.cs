@@ -3,6 +3,13 @@ using System.Collections;
 
 public class EnemyA : MonoBehaviour {
 
+    private enum dir { left, right, count };
+    private const float GROUND_HEIGHT = -8;
+
+    private Vector2 startPos;
+    private int damage = 0;
+
+    public GameObject deadEnemy;
 	public Transform groundCheck;
 	public Transform groundCheck2;
 	public float groundCheckRadius;
@@ -12,7 +19,7 @@ public class EnemyA : MonoBehaviour {
 	private bool grounded2;
 	
 	private float jumpHeight = 20F;
-	private float moveSpeed = 10.0F;
+	private float moveSpeed = 5.0F;
 	private float downHeight = 5.5F;
 	private float waitTime = 0.65F;
 	
@@ -34,6 +41,9 @@ public class EnemyA : MonoBehaviour {
 	
 	// Use this for initialization
 	void Start () {
+
+        startPos = transform.position;
+
 		gorilla = GetComponent<CircleCollider2D>();	
 		gorilla2 = GetComponent<BoxCollider2D>();
 		groundCheckRadius = 1.0f;
@@ -43,10 +53,10 @@ public class EnemyA : MonoBehaviour {
 		
 		StartCoroutine (run (waitTime));		
 	}
-	void Update () {
-		
-	}
+
 	void FixedUpdate () {
+  
+        Debug.Log(GetComponent<Rigidbody2D>().velocity.magnitude);
 		grounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
 		grounded2 = Physics2D.OverlapCircle(groundCheck2.position, groundCheckRadius, whatIsGround2);
 
@@ -70,10 +80,42 @@ public class EnemyA : MonoBehaviour {
 			gorilla.isTrigger = false;
 			gorilla2.isTrigger = true;
 		}
-	}
 
+        // If this enemy hits the ground he is knocked back into the trees
+        if (transform.position.y < GROUND_HEIGHT)
+        {
+            HitTheGround();
+        }
+        // If this enemy goes too far out of bounds then he is reset to start position
+        else if(transform.position.x < -37.5f || transform.position.x > 37.5f || transform.position.y > 24f)
+        {
+            GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+            transform.position = startPos;
+        }
 
-	bool ckHeight(float heightY) {
+}
+    /// <summary>
+    /// When the player falls to the ground this reverses the velocity to get him back on a branch.
+    /// </summary>
+    private void HitTheGround()
+    {
+        Vector2 vel = GetComponent<Rigidbody2D>().velocity;
+
+        // When there's no x velocity this adds x velocity in a random direction,
+        // so the player can grab a branch when there's no branch above them.
+        if (vel.x == 0)
+        {
+            dir ran_dir = (dir)Random.Range(0, 2);
+            if (ran_dir == dir.left)
+                vel = new Vector2(-.5f, vel.y);
+            else
+                vel = new Vector2(.5f, vel.y);
+        }
+
+        GetComponent<Rigidbody2D>().velocity = -(vel * 1.2f);
+    }
+
+    bool ckHeight(float heightY) {
 		myPosition = transform.position;
 		if (myPosition.y > heightY) {
 			return true;
@@ -166,9 +208,40 @@ public class EnemyA : MonoBehaviour {
 	}
 	void OnTriggerEnter2D(Collider2D other)
 	{
-		jump = true;		
+		jump = true;	
+        if(other.tag == "Bullet")
+        {
+            Rigidbody2D bulletBody = other.GetComponent<Rigidbody2D>();
+            Rigidbody2D enemyBody = gameObject.GetComponent<Rigidbody2D>();
+            other.GetComponent<Collider2D>().enabled = false;
+            enemyBody.velocity = Vector2.zero;
+            enemyBody.velocity = bulletBody.velocity.normalized * 500;
+            bulletBody.velocity = Vector2.zero;
+            TakeDamage();
+        }	
 	}
-	
+
+	/// <summary>
+    /// When this enemy is hit by a bullet object, he takes damage
+    /// </summary>
+    private void TakeDamage()
+    {
+        damage++;
+        if(damage == 1)
+        {
+            GetComponent<SpriteRenderer>().color = Color.yellow;
+        }
+        else if(damage == 2)
+        {
+            GetComponent<SpriteRenderer>().color = Color.green;
+        }
+        else if(damage == 3)
+        {
+            Instantiate(deadEnemy, transform.position, Quaternion.identity);
+            gameObject.SetActive(false);
+        }
+    }
+
 	/*void OnTriggerStay2D(Collider2D other)
 	{
 		jump = false;
@@ -180,11 +253,5 @@ public class EnemyA : MonoBehaviour {
 		jump = false;
 	
 	}
-	void OnCollisionEnter2D(Collision2D coll) {
-		if (coll.gameObject.tag == "Monkey") {//coll.gameObject.tag == "Enemy" || 
-			//Destroy (coll.gameObject);
-			//coll.gameObject.GetComponent<Rigidbody2D>().AddForce(new Vector2(10,10) * 400.0f);
-		}
-		
-	}
+
 }
