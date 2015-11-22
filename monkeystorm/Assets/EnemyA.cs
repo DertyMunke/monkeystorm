@@ -215,7 +215,7 @@ public class EnemyA : MonoBehaviour {
             Rigidbody2D enemyBody = gameObject.GetComponent<Rigidbody2D>();
             other.GetComponent<Collider2D>().enabled = false;
             enemyBody.velocity = Vector2.zero;
-            enemyBody.velocity = bulletBody.velocity.normalized * 500;
+            enemyBody.velocity = bulletBody.velocity.normalized * 2;
             bulletBody.velocity = Vector2.zero;
             TakeDamage();
         }	
@@ -238,6 +238,7 @@ public class EnemyA : MonoBehaviour {
         else if(damage == 3)
         {
             Instantiate(deadEnemy, transform.position, Quaternion.identity);
+            EnemyManagerLvl2.enemyManagerScript.EnemyDead();
             gameObject.SetActive(false);
         }
     }
