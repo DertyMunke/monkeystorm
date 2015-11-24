@@ -50,16 +50,17 @@ public class EnemyManagerLvl2 : MonoBehaviour {
     public void EnemyDead()
     {
         enemyDead++;
-        if(enemyDead == maxEnemy)
+        UIEvents.uiEventsScript.Score = 100;
+
+        if (enemyDead == maxEnemy)
         {
             topText.text = "You have defeated the EMFA!!";
             botText.text = "Looks like you are safe... for now.";
             gameOva.SetActive(true);
             checkInput = true;
             GameManager.gameManagerScript.Level = 3;
-            int score = 0;
-            int.TryParse(UIEvents.uiEventsScript.Score, out score);
-            GameManager.gameManagerScript.Score = score;
+            UIEvents.uiEventsScript.Score = -UIEvents.uiEventsScript.Timer;
+            GameManager.gameManagerScript.Score += UIEvents.uiEventsScript.Score;
             Time.timeScale = 0;
         }
     }

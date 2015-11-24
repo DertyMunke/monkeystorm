@@ -23,11 +23,16 @@ public class HouseBuilder : MonoBehaviour {
                 Application.LoadLevel("level2");
     }
 
+    /// <summary>
+    /// Checks for a branch and then uses it to build a piece of the house
+    /// </summary>
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (other.tag == "Branch" && other.name != "Unbreakable")
         {
-            if(leftWall.activeInHierarchy)
+            UIEvents.uiEventsScript.Score = 50;
+
+            if (leftWall.activeInHierarchy)
             {
                 ceiling.SetActive(true);
                 endLvlTxt.SetActive(true);
@@ -35,9 +40,8 @@ public class HouseBuilder : MonoBehaviour {
                 botTxt.text = "...Or can he?";
                 checkInput = true;
                 GameManager.gameManagerScript.Level = 2;
-                int score = 0;
-                int.TryParse(UIEvents.uiEventsScript.Score, out score);
-                GameManager.gameManagerScript.Score += score;
+                UIEvents.uiEventsScript.Score = -UIEvents.uiEventsScript.Timer;
+                GameManager.gameManagerScript.Score += UIEvents.uiEventsScript.Score;
                 Time.timeScale = 0;
             }
             else if(rightWall.activeInHierarchy)

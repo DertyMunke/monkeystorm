@@ -56,7 +56,6 @@ public class EnemyA : MonoBehaviour {
 
 	void FixedUpdate () {
   
-        Debug.Log(GetComponent<Rigidbody2D>().velocity.magnitude);
 		grounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
 		grounded2 = Physics2D.OverlapCircle(groundCheck2.position, groundCheckRadius, whatIsGround2);
 

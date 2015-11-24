@@ -26,7 +26,35 @@ public class UIEvents : MonoBehaviour
     private bool restartLvl = false;
     private int heartIndex;
 
-    public string Score { get { return scoreLabel.text; } }
+    /// <summary>
+    /// Returns the timer value as an integer
+    /// </summary>
+    public int Timer {
+        get
+        {
+            int timer;
+            int.TryParse(timerLabel.text, out timer);
+            return timer;
+        }
+    }
+
+    /// <summary>
+    /// Returns a score integer and takes a integer that is added to the score and displayed
+    /// </summary>
+    public int Score {
+        get
+        {
+            int score = 0;
+            int.TryParse(scoreLabel.text, out score);
+            return score;
+        }
+        set
+        {
+            int score = 0;
+            int.TryParse(scoreLabel.text, out score);
+            scoreLabel.text = (score + value).ToString() ;
+        }
+    }
 
     private void Awake()
     {
@@ -49,7 +77,7 @@ public class UIEvents : MonoBehaviour
             GameInstance.timer += Time.deltaTime;
             timerLabel.text = ((int)GameInstance.timer).ToString();
 
-            scoreLabel.text = GameInstance.currentScore.ToString();
+            //scoreLabel.text = GameInstance.currentScore.ToString();
 
             //for (int i = 0; i < hearts.Length; i++)
             //{
