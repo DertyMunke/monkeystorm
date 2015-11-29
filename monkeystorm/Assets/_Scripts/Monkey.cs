@@ -36,11 +36,13 @@ public class Monkey : MonoBehaviour {
     private Vector3 throwDirection;
     private bool carryBranch = false;
     private bool throwBanana = false;
+    private bool takeDamage = false;
     private int numBananas = 0;
 
     public static Monkey monkeyScript;
 
     public bool CarryBranch { set { carryBranch = value; } }
+    public bool TakeDamage { get { return takeDamage; } set { takeDamage = value; }}
 
     private void Awake()
     {
@@ -49,7 +51,7 @@ public class Monkey : MonoBehaviour {
 
     // Use this for initialization
     void Start()
-    {   
+    {
         oldMousePosition = Vector2.zero;
         newMousePosition = Vector2.zero;
         moveSpeed = 11;
@@ -74,6 +76,8 @@ public class Monkey : MonoBehaviour {
     {
         //set grounded if it is attached to branches
         grounded = Physics2D.OverlapCircle(branchCheck.position, branchCheckRadius, whatIsBranch);
+        if (grounded && takeDamage)
+            takeDamage = false;
 
         // When the monkey is moving upwards disable the collider
         if (GetComponent<Rigidbody2D>().velocity.y > 0)
@@ -90,7 +94,7 @@ public class Monkey : MonoBehaviour {
     // Update is called once per frame
     void Update()
     {
-        if (!throwBanana)
+        if (!throwBanana && !takeDamage)
         {
             //get delta mouse
             float deltaM = GetDeltaMouse();
@@ -149,6 +153,7 @@ public class Monkey : MonoBehaviour {
     {
         if (grounded)
         {
+            GetComponentInChildren<Animator>().SetTrigger("Shake");
             GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, 3f);
             currentBranch = BranchCheck.branchCheckScript.CurrentBranch;
             if(currentBranch && currentBranch.name != "Unbreakable")
@@ -314,6 +319,7 @@ public class Monkey : MonoBehaviour {
     private void Move(int r, int l, int s, int u, int d, int xD, int yD)
     {
         //jump if chacco is on branches
+        GetComponentInChildren<Animator>().SetTrigger("Jump");
 
         //check if it is swing
         bool swing = CheckBackDrag(r,l,s,xD);

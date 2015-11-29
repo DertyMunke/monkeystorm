@@ -7,6 +7,7 @@ public class EnemyA : MonoBehaviour {
     private const float GROUND_HEIGHT = -8;
 
     private Vector2 startPos;
+    private bool hitGround = false;
     private int damage = 0;
 
     public GameObject deadEnemy;
@@ -55,40 +56,60 @@ public class EnemyA : MonoBehaviour {
 	}
 
 	void FixedUpdate () {
-  
-		grounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
-		grounded2 = Physics2D.OverlapCircle(groundCheck2.position, groundCheckRadius, whatIsGround2);
 
-		if (!grounded && grounded2) {
-			gorilla.isTrigger = true;
-			if (!jump)			
-				gorilla2.isTrigger = false;
-			else
-				gorilla2.isTrigger = true;
-		} else if (grounded && !grounded2) {
-			if (!jump) {
-				gorilla.isTrigger = false;
-			} else {
-				gorilla.isTrigger = true;
-			}
-			gorilla2.isTrigger = true;
-		} else if (grounded && grounded2) {
-			gorilla.isTrigger = true;
-			gorilla2.isTrigger = true;
-		} else {
-			gorilla.isTrigger = false;
-			gorilla2.isTrigger = true;
-		}
+        grounded = Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, whatIsGround);
+        grounded2 = Physics2D.OverlapCircle(groundCheck2.position, groundCheckRadius, whatIsGround2);
+
+        if ((grounded || grounded2) && hitGround)
+            hitGround = false;
+
+        if (!hitGround)
+        {
+            if (!grounded && grounded2)
+            {
+                gorilla.isTrigger = true;
+                if (!jump)
+                    gorilla2.isTrigger = false;
+                else
+                    gorilla2.isTrigger = true;
+            }
+            else if (grounded && !grounded2)
+            {
+                if (!jump)
+                {
+                    gorilla.isTrigger = false;
+                }
+                else
+                {
+                    gorilla.isTrigger = true;
+                }
+                gorilla2.isTrigger = true;
+            }
+            else if (grounded && grounded2)
+            {
+                gorilla.isTrigger = true;
+                gorilla2.isTrigger = true;
+            }
+            else
+            {
+                gorilla.isTrigger = false;
+                gorilla2.isTrigger = true;
+            }
+        }
 
         // If this enemy hits the ground he is knocked back into the trees
         if (transform.position.y < GROUND_HEIGHT)
         {
+            hitGround = true;
+            grounded = false;
+            grounded = false;
             HitTheGround();
         }
         // If this enemy goes too far out of bounds then he is reset to start position
         else if(transform.position.x < -37.5f || transform.position.x > 37.5f || transform.position.y > 24f)
         {
             GetComponent<Rigidbody2D>().velocity = Vector2.zero;
+            hitGround = false;
             transform.position = startPos;
         }
 
@@ -106,9 +127,9 @@ public class EnemyA : MonoBehaviour {
         {
             dir ran_dir = (dir)Random.Range(0, 2);
             if (ran_dir == dir.left)
-                vel = new Vector2(-.5f, vel.y);
+                vel = new Vector2(2f, vel.y);
             else
-                vel = new Vector2(.5f, vel.y);
+                vel = new Vector2(2f, vel.y);
         }
 
         GetComponent<Rigidbody2D>().velocity = -(vel * 1.2f);
@@ -205,6 +226,7 @@ public class EnemyA : MonoBehaviour {
 			yield return new WaitForSeconds (waitTime);
 		}
 	}
+
 	void OnTriggerEnter2D(Collider2D other)
 	{
 		jump = true;	
@@ -214,7 +236,7 @@ public class EnemyA : MonoBehaviour {
             Rigidbody2D enemyBody = gameObject.GetComponent<Rigidbody2D>();
             other.GetComponent<Collider2D>().enabled = false;
             enemyBody.velocity = Vector2.zero;
-            enemyBody.velocity = bulletBody.velocity.normalized * 2;
+            enemyBody.velocity = bulletBody.velocity.normalized * 5;
             bulletBody.velocity = Vector2.zero;
             TakeDamage();
         }	
@@ -251,7 +273,5 @@ public class EnemyA : MonoBehaviour {
 	void OnTriggerExit2D(Collider2D other)
 	{
 		jump = false;
-	
 	}
-
 }

@@ -23,8 +23,11 @@ public class UIEvents : MonoBehaviour
     public UILabel gameOva;
     public UILabel playBtnLbl;
 
+    private bool loseHeart = true;
     private bool restartLvl = false;
     private int heartIndex;
+
+    public bool LoseHeart { get { return loseHeart; } }
 
     /// <summary>
     /// Returns the timer value as an integer
@@ -64,9 +67,12 @@ public class UIEvents : MonoBehaviour
 
     private void Start()
     {
-        GameInstance.timer = 0;
-        scoreLabel.text = GameManager.gameManagerScript.Score.ToString();
-        levelLabel.text = GameManager.gameManagerScript.Level.ToString();
+        if (Application.loadedLevelName != "Main Menu")
+        {
+            GameInstance.timer = 0;
+            scoreLabel.text = GameManager.gameManagerScript.Score.ToString();
+            levelLabel.text = GameManager.gameManagerScript.Level.ToString();
+        }
     }
     
     // Update is called once per frame
@@ -206,22 +212,35 @@ public class UIEvents : MonoBehaviour
     }
 
     /// <summary>
-    /// Removes a heart from the UI when damage received
+    /// Removes a heart from the UI when damage received. Returns true if there are hearts to lose
     /// </summary>
     public bool  RemoveHeart()
     {
-        hearts[heartIndex].enabled = false;
-        heartIndex--;
-        if(heartIndex < 0)
+        if(loseHeart)
         {
-            gameOva.enabled = true;
-            playBtnLbl.text = "Restart Level";
-            restartLvl = true;
-            OnPauseClick();
-            return false;
+            hearts[heartIndex].enabled = false;
+            heartIndex--;
+            if (heartIndex < 0)
+            {
+                gameOva.enabled = true;
+                playBtnLbl.text = "Restart Level";
+                restartLvl = true;
+                OnPauseClick();
+                return false;
+            }
+            loseHeart = false;
+            Invoke("StopRemoveHeart", .5f);
         }
 
         return true;
+    }
+
+    /// <summary>
+    /// Allows to set a time between losing hearts, so you don't lose multiple in one hit
+    /// </summary>
+    private void StopRemoveHeart()
+    {
+        loseHeart = true;
     }
     #endregion
 }
