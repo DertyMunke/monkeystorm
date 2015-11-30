@@ -417,4 +417,20 @@ public class Monkey : MonoBehaviour {
     }
 
     // I moved OnTriggerExit2D to a script on the BranchCheck object called BranchCheck.cs
+
+    //banana auto
+    private Vector2 bananaAuto()
+    {
+        Vector2 autoD = transform.position;
+        autoD.x += -1f;
+
+        GameObject[] ms = new GameObject[5];
+
+        for (int i = 0; i < 5; i++)
+        {
+
+        }
+
+        return autoD;
+    }
 }
