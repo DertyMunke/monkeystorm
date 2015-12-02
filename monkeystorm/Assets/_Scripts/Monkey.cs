@@ -57,7 +57,7 @@ public class Monkey : MonoBehaviour {
         moveSpeed = 11;
         jumpHeight = 16;
         jumpS = 1.5f;
-        moveS = 0.7f;
+        moveS = 0.5f;
         limitAngle = 70;
         branchCheck = GameObject.Find("Branch Check").transform;
         branchCheckRadius = 0.1f;
@@ -324,6 +324,15 @@ public class Monkey : MonoBehaviour {
         //check if it is swing
         bool swing = CheckBackDrag(r,l,s,xD);
 
+        //add little move part
+        Vector2 v = newMousePosition - oldMousePosition;
+        float angle = Vector2.Angle(Vector2.right, v);
+        bool littleM;
+        if (angle < 15 || angle > (180 - 15))
+            littleM = true;
+        else
+            littleM = false;
+
         //up directions
         if (yD == u && grounded)
         {
@@ -337,6 +346,8 @@ public class Monkey : MonoBehaviour {
                     //pass = false;
                     GetComponent<Rigidbody2D>().velocity = new Vector2(moveSpeed * sjump, jumpHeight * sjump);
                 }
+                else if(littleM)
+                    GetComponent<Rigidbody2D>().velocity = new Vector2(moveSpeed * moveS, GetComponent<Rigidbody2D>().velocity.y);
                 else
                     GetComponent<Rigidbody2D>().velocity = new Vector2(moveSpeed, jumpHeight);
             }
@@ -353,6 +364,8 @@ public class Monkey : MonoBehaviour {
                     //pass = false;
                     GetComponent<Rigidbody2D>().velocity = new Vector2(-moveSpeed * sjump, jumpHeight * sjump);
                 }
+                else if(littleM)
+                    GetComponent<Rigidbody2D>().velocity = new Vector2(-moveSpeed * moveS, GetComponent<Rigidbody2D>().velocity.y);
                 else
                     GetComponent<Rigidbody2D>().velocity = new Vector2(-moveSpeed, jumpHeight);
             }
@@ -418,19 +431,4 @@ public class Monkey : MonoBehaviour {
 
     // I moved OnTriggerExit2D to a script on the BranchCheck object called BranchCheck.cs
 
-    //banana auto
-    private Vector2 bananaAuto()
-    {
-        Vector2 autoD = transform.position;
-        autoD.x += -1f;
-
-        GameObject[] ms = new GameObject[5];
-
-        for (int i = 0; i < 5; i++)
-        {
-
-        }
-
-        return autoD;
-    }
 }
