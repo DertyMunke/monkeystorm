@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using System;
+using UnityEngine;
 using System.Collections;
 using DG.Tweening;
 
@@ -67,11 +68,26 @@ public class UIEvents : MonoBehaviour
 
     private void Start()
     {
+        Debug.Log(GameInstance.saveInfo[0]);
         if (Application.loadedLevelName != "Main Menu")
         {
             GameInstance.timer = 0;
             scoreLabel.text = GameManager.gameManagerScript.Score.ToString();
             levelLabel.text = GameManager.gameManagerScript.Level.ToString();
+        }
+        else
+        {
+            for (int k = 0; k < GameInstance.scores.Length; k++)
+            {
+                GameInstance.scores[k] = PlayerPrefs.GetString("ScoreSlot" + k.ToString());
+                Debug.Log(GameInstance.scores[k]);
+            }
+
+            for (int k = 0; k < GameInstance.saveInfo.Length; k++)
+            {
+                GameInstance.saveInfo[k] = PlayerPrefs.GetString("SaveSlot" + k.ToString());
+                Debug.Log(GameInstance.saveInfo[k]);
+            }
         }
     }
     
@@ -143,6 +159,12 @@ public class UIEvents : MonoBehaviour
         mainMenu.SetActive(false);
         Record.transform.DOMoveX(0, 0.3f);
         Record.SetActive(true);
+
+        for (int i = 0; i < GameInstance.saveInfo.Length; i++)
+        {
+            Record.transform.FindChild("record " + i.ToString()).GetComponentInChildren<UILabel>().text =
+                GameInstance.saveInfo[i];
+        }
     }
 
     public void OnMenuClick()
@@ -161,6 +183,8 @@ public class UIEvents : MonoBehaviour
         Record.transform.DOMoveX(795 / 360, 0.3f);
         mainMenu.transform.DOMoveX(0, 0.3f);
         mainMenu.SetActive(true);
+
+       
     }
 
     public void OnRecordClick()
@@ -169,6 +193,18 @@ public class UIEvents : MonoBehaviour
         setting.SetActive(false);
         Rankings.transform.DOMoveX(0, 0.3f);
         Rankings.SetActive(true);
+
+        for (int i = 0; i < GameInstance.scores.Length; i++)
+        {
+            Rankings.transform.FindChild("rank " + i.ToString()).GetComponentInChildren<UILabel>().text =
+                GameInstance.scores[i];
+        }
+    }
+
+    public void OnLoadRecord()
+    {
+        string[] tempStrs = UIButton.current.GetComponentInChildren<UILabel>().text.Split(':');
+        Application.LoadLevel(tempStrs[1]);
     }
 
     public void OnRankingBackClick()
@@ -211,6 +247,7 @@ public class UIEvents : MonoBehaviour
         Application.LoadLevel("Main Menu");
     }
 
+
     /// <summary>
     /// Removes a heart from the UI when damage received. Returns true if there are hearts to lose
     /// </summary>
@@ -218,16 +255,18 @@ public class UIEvents : MonoBehaviour
     {
         if(loseHeart)
         {
-            hearts[heartIndex].enabled = false;
-            heartIndex--;
+            if (heartIndex >= 0)
+            {
+                hearts[heartIndex].enabled = false;
+                heartIndex--;
+            }
+            
             if (heartIndex < 0)
             {
-                gameOva.enabled = true;
-                playBtnLbl.text = "Restart Level";
-                restartLvl = true;
-                OnPauseClick();
+                transform.FindChild("GameOver").gameObject.SetActive(true);
                 return false;
             }
+            
             loseHeart = false;
             Invoke("StopRemoveHeart", .5f);
         }
@@ -241,6 +280,96 @@ public class UIEvents : MonoBehaviour
     private void StopRemoveHeart()
     {
         loseHeart = true;
+    }
+
+    public void OnSave()
+    {
+        UIButton.current.transform.FindChild("Input").gameObject.SetActive(true);
+    }
+    public void OnSaveConfirm()
+    {
+        int i = 0;
+        for (; i < GameInstance.saveInfo.Length; i++)
+        {
+            if (GameInstance.saveInfo[i] == string.Empty)
+            {
+                break;
+            }
+        }
+        string saveName = UIButton.current.transform.parent.GetComponent<UIInput>().value == string.Empty ? "Defalut" : UIButton.current.transform.parent.GetComponent<UIInput>().value;
+
+        if (i == GameInstance.saveInfo.Length)     //full
+        {
+            for (int j = 0; j < GameInstance.saveInfo.Length-1; j++)
+            {
+                GameInstance.saveInfo[j] = GameInstance.saveInfo[j + 1];
+            }
+            GameInstance.saveInfo[GameInstance.saveInfo.Length-1] = saveName + ":" + Application.loadedLevelName;
+        }
+        else
+        {
+            GameInstance.saveInfo[i] = saveName + ":" + Application.loadedLevelName;
+        }
+
+        for (int k = 0; k < GameInstance.saveInfo.Length; k++)
+        {
+            PlayerPrefs.SetString("SaveSlot"+k.ToString(), GameInstance.saveInfo[k]);
+        }
+
+        UIButton.current.transform.parent.gameObject.SetActive(false);
+    }
+
+    public void OnSaveCancel()
+    {
+         UIButton.current.transform.parent.gameObject.SetActive(false);
+    }
+
+    public void OnGameOverConfirm()
+    {
+        if (GameInstance.currentScore == 0)
+        {
+            Application.LoadLevel("Main Menu");
+            return;
+        }
+        int i = 0;
+        for (; i < GameInstance.scores.Length; i++)
+        {
+            Debug.Log(GameInstance.scores[i]);
+            if (GameInstance.scores[i].Length<=2)
+            {
+                break;
+            }
+        }
+        string saveName = UIButton.current.transform.parent.GetComponent<UIInput>().value == string.Empty ? "Defalut" : UIButton.current.transform.parent.GetComponent<UIInput>().value;
+
+        if (i == GameInstance.scores.Length)     //full
+        {
+            for (int j = 0; j < GameInstance.scores.Length; j++)
+            {
+                string[] tempStrs = GameInstance.scores[j].Split(':');
+                int tempScore = Int32.Parse(tempStrs[1]);            
+                if(GameInstance.currentScore<=tempScore)
+                    continue;
+                else
+                {
+                    for (int h = GameInstance.scores.Length - 1; h > j; h--)
+                    {
+                        GameInstance.scores[h] = GameInstance.scores[h - 1];
+                    }
+                    GameInstance.scores[j] = saveName + ":" + GameInstance.currentScore.ToString(); ;
+                }
+            }
+        }
+        else
+        {
+            GameInstance.scores[i] = saveName + ":" + GameInstance.currentScore.ToString(); ;
+        }
+
+        for (int k = 0; k < GameInstance.scores.Length; k++)
+        {
+            PlayerPrefs.SetString("ScoreSlot" + k.ToString(), GameInstance.scores[k]);
+        }
+        Application.LoadLevel("Main Menu");
     }
     #endregion
 }

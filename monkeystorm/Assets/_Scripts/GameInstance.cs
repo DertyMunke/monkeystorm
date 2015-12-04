@@ -8,6 +8,12 @@ public static class GameInstance
 
     //game data
     public static float timer = 0;
-    public static int currentScore = 0;
+    public static int currentScore = 100;
     public static int currentHP = 3;
+
+    //save data
+    public static string[] saveInfo = new string[3]{string.Empty,string.Empty,string.Empty};
+
+    //format: name:score
+    public static string[] scores = new string[3] { string.Empty, string.Empty, string.Empty };
 }
