@@ -8,7 +8,7 @@ public static class GameInstance
 
     //game data
     public static float timer = 0;
-    public static int currentScore = 100;
+    public static int currentScore = 0;
     public static int currentHP = 3;
 
     //save data

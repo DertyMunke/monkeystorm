@@ -6,7 +6,7 @@ public class GameManager : MonoBehaviour {
     public static GameManager gameManagerScript;
 
     private bool tootLvl_1 = true;
-    private bool tootLvl_2 = false;
+    private bool tootLvl_2 = true;
     private bool tootLvl_3 = true;
     private int score = 0;
     private int level = 1;

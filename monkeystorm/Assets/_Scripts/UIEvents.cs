@@ -21,7 +21,7 @@ public class UIEvents : MonoBehaviour
 
     public static UIEvents uiEventsScript;
     public UITexture[] hearts;
-    public UILabel gameOva;
+    public UIButton pauseBtn;
     public UILabel playBtnLbl;
 
     private bool loseHeart = true;
@@ -29,6 +29,7 @@ public class UIEvents : MonoBehaviour
     private int heartIndex;
 
     public bool LoseHeart { get { return loseHeart; } }
+    public int NumHearts { get { return hearts.Length - heartIndex; } }
 
     /// <summary>
     /// Returns the timer value as an integer
@@ -48,15 +49,12 @@ public class UIEvents : MonoBehaviour
     public int Score {
         get
         {
-            int score = 0;
-            int.TryParse(scoreLabel.text, out score);
-            return score;
+            return GameInstance.currentScore;
         }
         set
         {
-            int score = 0;
-            int.TryParse(scoreLabel.text, out score);
-            scoreLabel.text = (score + value).ToString() ;
+            GameInstance.currentScore += value;
+            scoreLabel.text = (GameInstance.currentScore).ToString() ;
         }
     }
 
@@ -77,6 +75,7 @@ public class UIEvents : MonoBehaviour
         }
         else
         {
+            GameInstance.currentScore = 0;
             for (int k = 0; k < GameInstance.scores.Length; k++)
             {
                 GameInstance.scores[k] = PlayerPrefs.GetString("ScoreSlot" + k.ToString());
@@ -247,6 +246,17 @@ public class UIEvents : MonoBehaviour
         Application.LoadLevel("Main Menu");
     }
 
+    /// <summary>
+    /// Removes all of the players hearts
+    /// </summary>
+    public void InstantKill()
+    {
+        for(int i = 0; i < hearts.Length - heartIndex; i++)
+        {
+            RemoveHeart();
+            loseHeart = true;
+        }
+    }
 
     /// <summary>
     /// Removes a heart from the UI when damage received. Returns true if there are hearts to lose
@@ -264,6 +274,8 @@ public class UIEvents : MonoBehaviour
             if (heartIndex < 0)
             {
                 transform.FindChild("GameOver").gameObject.SetActive(true);
+                pauseBtn.enabled = false;
+                Time.timeScale = 0;
                 return false;
             }
             
@@ -326,6 +338,7 @@ public class UIEvents : MonoBehaviour
 
     public void OnGameOverConfirm()
     {
+        Time.timeScale = 1;
         if (GameInstance.currentScore == 0)
         {
             Application.LoadLevel("Main Menu");

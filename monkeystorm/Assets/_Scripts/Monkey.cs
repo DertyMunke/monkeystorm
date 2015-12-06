@@ -137,6 +137,10 @@ public class Monkey : MonoBehaviour {
         {
             numBananas--;
             throwDirection = Input.mousePosition - throwDirection;
+            if(throwDirection.x <= 0)
+                GetComponentInChildren<Animator>().SetTrigger("ThrowLeft");
+            else
+                GetComponentInChildren<Animator>().SetTrigger("ThrowRight");
             Bananas.bananaScript.ThrowBanana(new Vector2(throwDirection.x, throwDirection.y), transform.position, numBananas);
         }
         Invoke("NoMoThrow", .1f);
@@ -318,9 +322,6 @@ public class Monkey : MonoBehaviour {
     //move by directions
     private void Move(int r, int l, int s, int u, int d, int xD, int yD)
     {
-        //jump if chacco is on branches
-        GetComponentInChildren<Animator>().SetTrigger("Jump");
-
         //check if it is swing
         bool swing = CheckBackDrag(r,l,s,xD);
 
@@ -329,9 +330,15 @@ public class Monkey : MonoBehaviour {
         float angle = Vector2.Angle(Vector2.right, v);
         bool littleM;
         if (angle < 15 || angle > (180 - 15))
+        {
+            GetComponentInChildren<Animator>().SetTrigger("Shake"); // Trigger shake animation if a small movement
             littleM = true;
+        }          
         else
+        {
+            GetComponentInChildren<Animator>().SetTrigger("Jump"); // Trigger jump animation if jump movement
             littleM = false;
+        }
 
         //up directions
         if (yD == u && grounded)

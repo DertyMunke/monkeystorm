@@ -65,5 +65,9 @@ public class Damage : MonoBehaviour {
                 -other.gameObject.GetComponent<Rigidbody2D>().velocity * 2.5f;
             UIEvents.uiEventsScript.RemoveHeart();
         }
+        else if(other.tag == "Bulldozer")
+        {
+            UIEvents.uiEventsScript.InstantKill();
+        }
     }
 }
