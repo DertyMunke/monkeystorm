@@ -14,7 +14,7 @@ public class GameManager : MonoBehaviour {
     public bool TootLvl_1 { get { return tootLvl_1; } set { tootLvl_1 = value; } }
     public bool TootLvl_2 { get { return tootLvl_2; } set { tootLvl_2 = value; } }
     public bool TootLvl_3 { get { return tootLvl_3; } set { tootLvl_3 = value; } }
-    public int Score { get { return score; } set { score += value; } }
+    public int Score { get { return score; } set { score = value; } }
     public int Level { get { return level; } set { level = value; } }
 
     private void Awake ()
@@ -26,6 +26,5 @@ public class GameManager : MonoBehaviour {
         }
         else if(gameManagerScript != this)
             Destroy(gameObject);
-	}
-	
+	}	
 }

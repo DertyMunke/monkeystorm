@@ -6,6 +6,7 @@ public class HouseBuilder_verjb : MonoBehaviour {
 
     private bool checkInput = false;
 
+    public GameObject placeHere;
     public GameObject leftWall;
     public GameObject rightWall;
     public GameObject ceiling;
@@ -15,8 +16,6 @@ public class HouseBuilder_verjb : MonoBehaviour {
     public GameObject endLvlTxt;
     public UILabel topTxt;
     public UILabel botTxt;
-    //
-    public GameObject placeHere;
 
     private void Update()
     {

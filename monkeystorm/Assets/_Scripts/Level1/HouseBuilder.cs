@@ -3,9 +3,9 @@ using System.Collections;
 using DG.Tweening;
 
 public class HouseBuilder : MonoBehaviour {
-
     private bool checkInput = false;
 
+    public GameObject placeHere;
     public GameObject leftWall;
     public GameObject rightWall;
     public GameObject ceiling;
@@ -31,26 +31,29 @@ public class HouseBuilder : MonoBehaviour {
         if (other.tag == "Branch" && other.name != "Unbreakable")
         {
             UIEvents.uiEventsScript.Score = 50;
+            SoundManager.soundManagerScript.Construct();
 
             if (leftWall.activeInHierarchy)
             {
+                SoundManager.soundManagerScript.Celebrate();
                 ceiling.SetActive(true);
                 endLvlTxt.SetActive(true);
                 topTxt.text = "Yay, you did it!! Now Chocco can live happily ever after...";
                 botTxt.text = "...Or can he?";
                 checkInput = true;
                 GameManager.gameManagerScript.Level = 2;
-                UIEvents.uiEventsScript.Score = -UIEvents.uiEventsScript.Timer;
-                GameManager.gameManagerScript.Score += UIEvents.uiEventsScript.Score;
+                StartCoroutine(UIEvents.uiEventsScript.MinusTimer());
+                GameInstance.level++;
                 Time.timeScale = 0;
             }
-            else if(rightWall.activeInHierarchy)
+            else if (rightWall.activeInHierarchy)
             {
                 leftWall.SetActive(true);
                 ceilingBranch.GetComponent<Branch>().StartColorChange(Color.blue);
             }
             else
             {
+                placeHere.SetActive(false);
                 rightWall.SetActive(true);
                 leftBranch.GetComponent<Branch>().StartColorChange(Color.blue);
             }
@@ -59,5 +62,4 @@ public class HouseBuilder : MonoBehaviour {
             other.gameObject.SetActive(false);
         }
     }
-    
 }

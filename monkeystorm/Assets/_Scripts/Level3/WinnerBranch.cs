@@ -20,13 +20,15 @@ public class WinnerBranch : MonoBehaviour {
     {
         if (other.transform.parent.tag == "Player")
         {
+            SoundManager.soundManagerScript.Celebrate();
             topText.text = "You have outrun the bulldozer!!";
             botText.text = "Now you must find a new place to rebuild your home.";
             gameOva.SetActive(true);
             checkInput = true;
             GameManager.gameManagerScript.Level = 1;
-            UIEvents.uiEventsScript.Score = 500 - UIEvents.uiEventsScript.Timer;
-            GameManager.gameManagerScript.Score += UIEvents.uiEventsScript.Score;
+            UIEvents.uiEventsScript.Score = 250;
+            StartCoroutine(UIEvents.uiEventsScript.MinusTimer());
+            GameInstance.level++;
             Time.timeScale = 0;
         }
     }

@@ -41,6 +41,10 @@ public class UIEvents : MonoBehaviour
             int.TryParse(timerLabel.text, out timer);
             return timer;
         }
+        set
+        {
+            timerLabel.text = value.ToString();
+        }
     }
 
     /// <summary>
@@ -71,7 +75,7 @@ public class UIEvents : MonoBehaviour
         {
             GameInstance.timer = 0;
             scoreLabel.text = GameManager.gameManagerScript.Score.ToString();
-            levelLabel.text = GameManager.gameManagerScript.Level.ToString();
+            levelLabel.text = GameInstance.level.ToString();
         }
         else
         {
@@ -93,7 +97,7 @@ public class UIEvents : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if (Application.loadedLevelName != "Main Menu")
+        if (Application.loadedLevelName != "Main Menu" && Time.timeScale != 0)
         {
             GameInstance.timer += Time.deltaTime;
             timerLabel.text = ((int)GameInstance.timer).ToString();
@@ -287,6 +291,27 @@ public class UIEvents : MonoBehaviour
     }
 
     /// <summary>
+    /// Subtracts the timer from the score
+    /// </summary>
+    public IEnumerator MinusTimer()
+    {
+        float mytime = 0;
+        GameManager.gameManagerScript.Score = Score - Timer;
+        while (Timer > 0)
+        {
+            if(mytime % 5 == 0)
+            {
+                Timer = (Timer - 1);
+                Score = -1;
+            }
+
+            mytime += 1;
+            yield return null;
+        }
+            
+    }
+
+    /// <summary>
     /// Allows to set a time between losing hearts, so you don't lose multiple in one hit
     /// </summary>
     private void StopRemoveHeart()
@@ -298,6 +323,7 @@ public class UIEvents : MonoBehaviour
     {
         UIButton.current.transform.FindChild("Input").gameObject.SetActive(true);
     }
+
     public void OnSaveConfirm()
     {
         int i = 0;
@@ -339,6 +365,7 @@ public class UIEvents : MonoBehaviour
     public void OnGameOverConfirm()
     {
         Time.timeScale = 1;
+
         if (GameInstance.currentScore == 0)
         {
             Application.LoadLevel("Main Menu");
@@ -348,7 +375,7 @@ public class UIEvents : MonoBehaviour
         for (; i < GameInstance.scores.Length; i++)
         {
             Debug.Log(GameInstance.scores[i]);
-            if (GameInstance.scores[i].Length<=2)
+            if (GameInstance.scores[i].Length <= 2)
             {
                 break;
             }
@@ -360,8 +387,8 @@ public class UIEvents : MonoBehaviour
             for (int j = 0; j < GameInstance.scores.Length; j++)
             {
                 string[] tempStrs = GameInstance.scores[j].Split(':');
-                int tempScore = Int32.Parse(tempStrs[1]);            
-                if(GameInstance.currentScore<=tempScore)
+                int tempScore = Int32.Parse(tempStrs[1]);
+                if (GameInstance.currentScore <= tempScore)
                     continue;
                 else
                 {

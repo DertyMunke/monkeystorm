@@ -29,7 +29,10 @@ public class BranchCheck : MonoBehaviour {
     private void OnCollisionEnter2D(Collision2D other)
     {
         if (other.gameObject.tag == "Branch")
+        {
+            //SoundManager.soundManagerScript.Shake();
             currentBranch = other.gameObject;
+        }
         else
             currentBranch = null;
     }

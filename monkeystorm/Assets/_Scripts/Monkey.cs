@@ -40,6 +40,7 @@ public class Monkey : MonoBehaviour {
     private int numBananas = 0;
 
     public static Monkey monkeyScript;
+    public AudioSource audioSource;
 
     public bool CarryBranch { set { carryBranch = value; } }
     public bool TakeDamage { get { return takeDamage; } set { takeDamage = value; }}
@@ -52,6 +53,7 @@ public class Monkey : MonoBehaviour {
     // Use this for initialization
     void Start()
     {
+        audioSource = GetComponent<AudioSource>();
         oldMousePosition = Vector2.zero;
         newMousePosition = Vector2.zero;
         moveSpeed = 11;
@@ -157,6 +159,7 @@ public class Monkey : MonoBehaviour {
     {
         if (grounded)
         {
+            SoundManager.soundManagerScript.Shake();
             GetComponentInChildren<Animator>().SetTrigger("Shake");
             GetComponent<Rigidbody2D>().velocity = new Vector2(GetComponent<Rigidbody2D>().velocity.x, 3f);
             currentBranch = BranchCheck.branchCheckScript.CurrentBranch;
@@ -337,6 +340,7 @@ public class Monkey : MonoBehaviour {
         else
         {
             GetComponentInChildren<Animator>().SetTrigger("Jump"); // Trigger jump animation if jump movement
+            SoundManager.soundManagerScript.PlayerJump(audioSource);
             littleM = false;
         }
 

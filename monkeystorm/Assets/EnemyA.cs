@@ -49,9 +49,9 @@ public class EnemyA : MonoBehaviour {
 		gorilla2 = GetComponent<BoxCollider2D>();
 		groundCheckRadius = 1.0f;
 		stopped = false;
-		jump = false;	
+		jump = false;
 
-		
+        StartCoroutine(RandomSounds());
 		StartCoroutine (run (waitTime));		
 	}
 
@@ -262,6 +262,27 @@ public class EnemyA : MonoBehaviour {
             EnemyManagerLvl2.enemyManagerScript.EnemyDead();
             gameObject.SetActive(false);
         }
+    }
+
+    /// <summary>
+    /// Determines if the enemy will make a noise and what noise they will make
+    /// </summary>
+    private IEnumerator RandomSounds()
+    {
+        float clipLength = 0;
+        bool gorillaActive = true;
+        bool makeNoise = true;
+
+        while(gorillaActive)
+        {
+            makeNoise = Random.Range(0, 100) < 50 ? false : true;
+
+            if (makeNoise && Time.timeScale == 1)
+                clipLength = SoundManager.soundManagerScript.GorillaNoise(GetComponent<AudioSource>());
+            yield return new WaitForSeconds(clipLength + 2f);
+        }
+
+        yield return null;
     }
 
 	/*void OnTriggerStay2D(Collider2D other)

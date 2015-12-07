@@ -10,6 +10,7 @@ public static class GameInstance
     public static float timer = 0;
     public static int currentScore = 0;
     public static int currentHP = 3;
+    public static int level = 1;
 
     //save data
     public static string[] saveInfo = new string[3]{string.Empty,string.Empty,string.Empty};

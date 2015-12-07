@@ -47,6 +47,9 @@ public class EnemyManagerLvl2 : MonoBehaviour {
         }
     }
 
+    /// <summary>
+    /// Handles the death of an enemy
+    /// </summary>
     public void EnemyDead()
     {
         enemyDead++;
@@ -54,13 +57,14 @@ public class EnemyManagerLvl2 : MonoBehaviour {
 
         if (enemyDead == maxEnemy)
         {
+            SoundManager.soundManagerScript.Celebrate();
             topText.text = "You have defeated the EMFA!!";
             botText.text = "Looks like you are safe... for now.";
             gameOva.SetActive(true);
             checkInput = true;
             GameManager.gameManagerScript.Level = 3;
-            UIEvents.uiEventsScript.Score = -UIEvents.uiEventsScript.Timer;
-            GameManager.gameManagerScript.Score += UIEvents.uiEventsScript.Score;
+            StartCoroutine(UIEvents.uiEventsScript.MinusTimer());
+            GameInstance.level++;
             Time.timeScale = 0;
         }
     }

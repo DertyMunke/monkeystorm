@@ -51,5 +51,6 @@ public class Bananas : MonoBehaviour {
         this.numBananas.text = numBananas.ToString();
         nana = Instantiate(bananas[2], position, Quaternion.identity) as GameObject;
         nana.GetComponent<Rigidbody2D>().AddForce(force);
+        SoundManager.soundManagerScript.Throw(nana.GetComponent<AudioSource>());
     }
 }

@@ -5,26 +5,29 @@ using DG.Tweening;
 public class TootLvl_1 : MonoBehaviour {
 
     private int tootStep = 0;
-
+    private int tootStepMax = 6;
     public GameObject tootMenu;
+    public UIButton pauseBtn;
     public UILabel topTootTxt;
     public UILabel botTootTxt;
 
 	// Use this for initialization
 	void Start ()
     {
-        if (GameManager.gameManagerScript.TootLvl_1)
+        if (GameInstance.level == 4)
         {
-            tootMenu.SetActive(true);
-            Time.timeScale = 0;
+            tootStep = 6;
+            tootStepMax = 9;
         }
-        else
-            Time.timeScale = 1;
+        tootMenu.SetActive(true);
+        pauseBtn.enabled = false;
+        Time.timeScale = 0;
+ 
     }
 
     private void Update()
     {
-        if (tootStep < 6 && Input.GetMouseButtonDown(0))
+        if (tootStep < tootStepMax && Input.GetMouseButtonDown(0))
         {
             TootStep();
         }
@@ -32,6 +35,7 @@ public class TootLvl_1 : MonoBehaviour {
 	
     public void TootStep()
     {
+        // Start tutorial from level 1
         if(tootStep == 0)
         {
             tootStep++;
@@ -67,6 +71,28 @@ public class TootLvl_1 : MonoBehaviour {
             tootStep++;
             GameManager.gameManagerScript.TootLvl_1 = false;
             tootMenu.SetActive(false);
+            pauseBtn.enabled = true;
+            Time.timeScale = 1;
+        }
+        // Start tutorial from level 4
+        else if(tootStep == 6)
+        {
+            tootStep++;
+            topTootTxt.text = "The EMFA are in the area.";
+            botTootTxt.text = "You must avoid them and build a hideout shelter.";
+        }
+        else if (tootStep == 7)
+        {
+            tootStep++;
+            topTootTxt.text = "Touch anywhere to begin.";
+            botTootTxt.text = "";
+        }
+        else if (tootStep == 8)
+        {
+            tootStep++;
+            GameManager.gameManagerScript.TootLvl_1 = false;
+            tootMenu.SetActive(false);
+            pauseBtn.enabled = true;
             Time.timeScale = 1;
         }
     }

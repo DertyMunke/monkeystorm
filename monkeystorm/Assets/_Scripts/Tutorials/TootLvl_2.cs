@@ -7,6 +7,7 @@ public class TootLvl_2 : MonoBehaviour
     private int tootStep = 0;
 
     public GameObject tootMenu;
+    public UIButton pauseBtn;
     public UILabel topTootTxt;
     public UILabel botTootTxt;
 
@@ -16,6 +17,7 @@ public class TootLvl_2 : MonoBehaviour
         if (GameManager.gameManagerScript.TootLvl_2)
         {
             tootMenu.SetActive(true);
+            pauseBtn.enabled = false;
             Time.timeScale = 0;
         }
         else
@@ -55,6 +57,7 @@ public class TootLvl_2 : MonoBehaviour
             tootStep++;
             GameManager.gameManagerScript.TootLvl_2 = false;
             tootMenu.SetActive(false);
+            pauseBtn.enabled = true;
             Time.timeScale = 1;
         }
     }
