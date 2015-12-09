@@ -163,11 +163,11 @@ public class UIEvents : MonoBehaviour
         Record.transform.DOMoveX(0, 0.3f);
         Record.SetActive(true);
 
-        for (int i = 0; i < GameInstance.saveInfo.Length; i++)
-        {
-            Record.transform.FindChild("record " + i.ToString()).GetComponentInChildren<UILabel>().text =
-                GameInstance.saveInfo[i];
-        }
+        //for (int i = 0; i < GameInstance.saveInfo.Length; i++)
+        //{
+        //    Record.transform.FindChild("record " + i.ToString()).GetComponentInChildren<UILabel>().text =
+        //        GameInstance.saveInfo[i];
+        //}
     }
 
     public void OnMenuClick()
@@ -240,14 +240,30 @@ public class UIEvents : MonoBehaviour
     { }
 
     public void OnMainMenuSettingClick()
-    {
-
-    }
+    { }
 
     public void OnQuitClick()
     {
         Time.timeScale = 1;
         Application.LoadLevel("Main Menu");
+    }
+
+    public void LoadLevel4()
+    {
+        GameInstance.level = 4;
+        Application.LoadLevel("Level1");
+    }
+
+    public void LoadLevel2()
+    {
+        GameInstance.level = 2;
+        Application.LoadLevel("Level2");
+    }
+
+    public void LoadLevel3()
+    {
+        GameInstance.level = 3;
+        Application.LoadLevel("Level3");
     }
 
     /// <summary>
@@ -365,6 +381,7 @@ public class UIEvents : MonoBehaviour
     public void OnGameOverConfirm()
     {
         Time.timeScale = 1;
+        GameInstance.level = 1;
 
         if (GameInstance.currentScore == 0)
         {
@@ -409,6 +426,9 @@ public class UIEvents : MonoBehaviour
         {
             PlayerPrefs.SetString("ScoreSlot" + k.ToString(), GameInstance.scores[k]);
         }
+
+        GameInstance.level = 1;
+        GameInstance.currentScore = 0;
         Application.LoadLevel("Main Menu");
     }
     #endregion

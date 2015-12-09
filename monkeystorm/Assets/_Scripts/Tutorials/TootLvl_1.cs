@@ -14,7 +14,7 @@ public class TootLvl_1 : MonoBehaviour {
 	// Use this for initialization
 	void Start ()
     {
-        if (GameInstance.level == 4)
+        if (GameInstance.level >= 4)
         {
             tootStep = 6;
             tootStepMax = 9;
